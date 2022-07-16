@@ -1,22 +1,59 @@
-const gameContainer = document.getElementById("game");
-let card1 = null;
-let card2 = null;
-let cardsFlipped = 0;
-let noClicking = false;
+const cards = document.querySelectorAll(".memory-card");
 
-const COLORS = [
-  "red",
-  "blue",
-  "green",
-  "orange",
-  "purple",
-  "red",
-  "blue",
-  "green",
-  "orange",
-  "purple"
-];
+let hasFlipped = false;
+let lockBoard = false;
+let firstCard, secondCard;
 
+function flipCard() {
+  if (lockBoard) return;
+  if (this === firstCard) return;
+
+  this.classList.add("flip");
+if (!hasFlipped) {
+  hasFlipped = true;
+  firstCard = this;
+} else {
+  hasFlipped = false;
+  secondCard = this;
+
+  checkForMatch();
+  }
+}
+
+function checkForMatch() {
+  if(firstCard.dataset.image === secondCard.dataset.image) {
+    firstCard.removeEventListener("click", flipCard);
+    secondCard.removeEventListener("click", flipCard);
+  } else {
+
+    lockBoard = true; 
+
+    setTimeout(() => {
+    firstCard.classList.remove("flip");
+    secondCard.classList.remove("flip");
+
+    lockBoard = false; 
+
+    }, 1000);
+  }
+
+  
+}
+
+(function shuffle() {
+  cards.forEach(card => {
+    let randomPos = Math.floor(Math.random() * 12);
+    card.style.order = randomPos;
+  });
+})();
+
+cards.forEach(card => card.addEventListener("click", flipCard));
+
+if(hasFlipped === cards.length) alert("YOU WIN!")
+
+
+
+/*
 // here is a helper function to shuffle an array
 // it returns the same array with values shuffled
 // it is based on an algorithm called Fisher Yates if you want ot research more
